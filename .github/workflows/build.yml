@@ -1,0 +1,27 @@
+name: Compilation STM32
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Récupérer le code
+      uses: actions/checkout@v4
+
+    - name: ⚙️ Installer la Toolchain ARM
+      uses: carlosperate/arm-none-eabi-gcc-action@v1
+      with:
+        release: '12.2.Rel1'
+
+    - name: 🧹 Nettoyage des fichiers Windows toxiques
+      # On détruit les caches de compilation Windows avant de compiler
+      run: |
+        find Debug -name "*.d" -type f -delete
+        find Debug -name "*.o" -type f -delete
+
+    - name: 🚀 Lancer la compilation
+      run: make -C Debug all
